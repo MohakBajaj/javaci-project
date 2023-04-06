@@ -8,23 +8,7 @@ pipeline {
             }
         }
         
-        stage('STATIC CODE ANALYSIS') {
-            steps {
-                script {
-                    withSonarQubeEnv(credentialsId: 'sonarqubetoken') {
-                        sh 'mvn clean package sonar:sonar'
-                    }
-                }
-            }
-        }
-
-        stage('QUALITY GATE STATUS') {
-            steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonarqubetoken'
-                }
-            }
-        }
+        
 
         stage('UNIT TESTING') {
             steps {
@@ -41,6 +25,23 @@ pipeline {
         stage('BUILD') {
             steps {
                 sh 'mvn clean package'
+            }
+        }
+        stage('STATIC CODE ANALYSIS') {
+            steps {
+                script {
+                    withSonarQubeEnv(credentialsId: 'sonarqubetoken') {
+                        sh 'mvn clean package sonar:sonar'
+                    }
+                }
+            }
+        }
+
+        stage('QUALITY GATE STATUS') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonarqubetoken'
+                }
             }
         }
     }
